@@ -1,3 +1,11 @@
+# PyFTDI ESPTOOL Fork
+
+Using pyftdi as serial provider to allow using CBUS gpio.
+
+Tested on Windows with [libusb-win32](https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/), once configred FT232RL devices will be listed by serial number. Can also be listed with _testlibusb-win.exe_.
+
+The CBUS gpio is used to control output enable of buffers between esp32 and ftdi.
+
 # esptool.py
 
 A Python-based, open-source, platform-independent utility to communicate with the ROM bootloader in Espressif chips.

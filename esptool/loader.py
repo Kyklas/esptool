@@ -14,6 +14,10 @@ import struct
 import sys
 import time
 
+import pyftdi.ftdi
+import pyftdi.eeprom
+import pyftdi.serialext
+
 from .config import load_config_file
 from .reset import (
     ClassicReset,
@@ -300,8 +304,33 @@ class ESPLoader(object):
 
         if isinstance(port, str):
             try:
-                self._port = serial.serial_for_url(port)
+                # Opening a pyftdi serial
+
+                #  ftdi://[vendor[:product[:index|:serial]]]/interface
+                self._port = pyftdi.serialext.serial_for_url("ftdi://::%s/1" % port)
+
+                if self._port.ftdi.has_cbus:
+                    eeprom = pyftdi.eeprom.FtdiEeprom()
+                    eeprom.connect(self._port.ftdi)
+                    if eeprom.cbus_mask & 0b1111 :
+                        print("FTDI CBUS Available : %02x" % eeprom.cbus_mask)
+                        # CBUS 3 as output and high
+                        pin = 0b1000 # mask and output dir
+                        value = 0b1000
+                        self._port.ftdi.set_cbus_direction(pin, pin)
+                        # Enable CBUS mode, else RESET mode is set
+                        self._port.ftdi.set_bitmode(pin, pyftdi.ftdi.Ftdi.BitMode.CBUS)
+                        self._port.ftdi.set_cbus_gpio(value)
+                        time.sleep(1)
+
+                #self._port = serial.serial_for_url(port)
             except serial.serialutil.SerialException:
+                devdescs = pyftdi.ftdi.Ftdi.list_devices()
+                if devdescs:
+                    print("Available FTDI")
+                    for desc,idx in devdescs:
+                        if desc.vid == pyftdi.ftdi.Ftdi.FTDI_VENDOR:
+                            print( "%04x:%04x %20s -> %15s" % (desc.vid,desc.pid,desc.description,desc.sn) )
                 raise FatalError(f"Could not open {port}, the port doesn't exist")
         else:
             self._port = port
