@@ -1,0 +1,17 @@
+esptool.name=Esptool
+esptool.communication=serial
+esptool.protocol=serial
+esptool.program.protocol=serial
+esptool.program.tool=esptool_py
+esptool.program.tool.default=esptool_py
+esptool.program.extra_params=
+esptool.extra_params=
+
+esptool_ftdi.name=Esptool FTDI
+esptool_ftdi.communication=serial
+esptool_ftdi.protocol=serial
+esptool_ftdi.program.protocol=serial
+esptool_ftdi.program.tool=esptool_ftdi_py
+esptool_ftdi.program.tool.default=esptool_ftdi_py
+esptool_ftdi.program.extra_params=
+esptool_ftdi.extra_params=
